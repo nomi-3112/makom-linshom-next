@@ -77,7 +77,7 @@ const ZoomSignupForm = () => {
         placeholder="טלפון"
         value={phone}
         onChange={(e) => setPhone(e.target.value)}
-        className="w-full px-4 py-2 rounded-md border text-sm outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+        className="w-full px-4 py-2 rounded-md border text-sm text-right outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
         style={{
           background: "var(--color-background)",
           borderColor: "var(--color-border)",
@@ -90,7 +90,7 @@ const ZoomSignupForm = () => {
         placeholder="כתובת מייל"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="w-full px-4 py-2 rounded-md border text-sm outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+        className="w-full px-4 py-2 rounded-md border text-sm text-right outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
         style={{
           background: "var(--color-background)",
           borderColor: "var(--color-border)",
