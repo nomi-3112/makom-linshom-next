@@ -28,13 +28,14 @@ export async function POST(request: Request) {
   }
 
   try {
-    await resend.emails.send({
+    const { error } = await resend.emails.send({
       from: "הרשמה לזום <onboarding@resend.dev>",
       to: "nzah311296@gmail.com",
       replyTo: email,
       subject: `הרשמה חדשה למפגש זום: ${name}`,
       text: `נרשם/ה חדש/ה למפגש נשימה פתוח בזום:\n\nשם: ${name}\nטלפון: ${phone}\nמייל: ${email}`,
     });
+    if (error) throw error;
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Resend send failed:", error);

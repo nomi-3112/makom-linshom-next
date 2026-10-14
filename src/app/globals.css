@@ -103,3 +103,33 @@
     background: var(--color-secondary);
   }
 }
+
+/* Breathing circle after waitlist signup: a soft translucent circle breathes (in = grows & brightens). */
+.breath-fill {
+  background: radial-gradient(circle, rgb(79 130 98 / 0.55) 0%, rgb(143 179 154 / 0.38) 50%, rgb(143 179 154 / 0) 71%);
+  transform: scale(0.7);
+  opacity: 0.55;
+}
+.breath-halo {
+  border: 2px solid rgb(79 130 98 / 0.45);
+  transform: scale(0.72);
+  opacity: 0.35;
+}
+@keyframes breath-fill {
+  0%, 100% { transform: scale(0.5); opacity: 0.4; }
+  50% { transform: scale(1); opacity: 0.9; }
+}
+@keyframes breath-halo {
+  0%, 100% { transform: scale(0.52); opacity: 0.15; }
+  50% { transform: scale(1); opacity: 0.6; }
+}
+.breath-fill.breathing { animation-name: breath-fill; animation-timing-function: ease-in-out; }
+.breath-halo.breathing { animation-name: breath-halo; animation-timing-function: ease-in-out; animation-delay: 150ms; }
+@keyframes breath-word {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+.breath-word { animation: breath-word 1.2s ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .breath-fill.breathing, .breath-halo.breathing, .breath-word { animation: none; }
+}
