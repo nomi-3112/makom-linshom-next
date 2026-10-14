@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import BreathingCircle from "@/components/BreathingCircle";
 
 const ChallengeWaitlistForm = () => {
   const [name, setName] = useState("");
@@ -39,8 +38,7 @@ const ChallengeWaitlistForm = () => {
 
   if (status === "success") {
     return (
-      <div className="text-center max-w-md mx-auto space-y-6">
-        <BreathingCircle breaths={3} />
+      <div className="text-center max-w-md mx-auto">
         <p className="body-text" style={{ color: "var(--color-primary)" }}>
           נרשמת לרשימה. נהיה בקשר בקרוב
         </p>
