@@ -47,4 +47,6 @@ function DialogContent({
   );
 }
 
-export { Dialog, DialogTrigger, DialogContent };
+const DialogTitle = DialogPrimitive.Title;
+
+export { Dialog, DialogTrigger, DialogContent, DialogTitle };

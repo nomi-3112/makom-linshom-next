@@ -4,25 +4,45 @@ import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 
+const STORAGE_KEY = "newsletter-dismissed";
+
 const NewsletterPopup = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [agreed, setAgreed] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
+  const [sending, setSending] = useState(false);
+  const [website, setWebsite] = useState("");
+
   useEffect(() => {
-    const dismissed = sessionStorage.getItem("newsletter-dismissed");
-    if (dismissed) return;
-    const timer = setTimeout(() => setIsOpen(true), 4000);
-    return () => clearTimeout(timer);
+    try {
+      if (localStorage.getItem(STORAGE_KEY)) return;
+    } catch {
+      // storage blocked: still show the popup once per page view
+    }
+
+    const onScroll = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      if (max > 0 && window.scrollY / max >= 0.5) {
+        setIsOpen(true);
+        window.removeEventListener("scroll", onScroll);
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   const handleClose = () => {
     setIsOpen(false);
-    sessionStorage.setItem("newsletter-dismissed", "true");
+    try {
+      localStorage.setItem(STORAGE_KEY, "true");
+    } catch {
+      // ignore
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {
       setMessage({ type: "error", text: "נא להזין כתובת מייל" });
@@ -32,8 +52,26 @@ const NewsletterPopup = () => {
       setMessage({ type: "error", text: "נא לאשר את מדיניות הפרטיות" });
       return;
     }
-    setMessage({ type: "success", text: "נרשמת בהצלחה לרשימת התפוצה" });
-    setTimeout(handleClose, 1500);
+    setSending(true);
+    setMessage(null);
+    try {
+      const res = await fetch("/api/newsletter-signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, website }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.success) {
+        setMessage({ type: "error", text: data.error || "שליחה נכשלה, נסו שוב" });
+        return;
+      }
+      setMessage({ type: "success", text: "נרשמת בהצלחה לרשימת התפוצה" });
+      setTimeout(handleClose, 1500);
+    } catch {
+      setMessage({ type: "error", text: "שליחה נכשלה, נסו שוב" });
+    } finally {
+      setSending(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -68,9 +106,21 @@ const NewsletterPopup = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Honeypot field, hidden from people */}
+          <input
+            type="text"
+            name="website"
+            tabIndex={-1}
+            autoComplete="off"
+            aria-hidden="true"
+            value={website}
+            onChange={(e) => setWebsite(e.target.value)}
+            className="absolute h-px w-px overflow-hidden opacity-0 pointer-events-none"
+          />
           <input
             type="email"
             placeholder="כתובת מייל"
+            aria-label="כתובת מייל"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             dir="ltr"
@@ -93,9 +143,10 @@ const NewsletterPopup = () => {
 
           <button
             type="submit"
-            className="cta-button w-full justify-center rounded-lg"
+            disabled={sending}
+            className="cta-button w-full justify-center rounded-lg disabled:opacity-60"
           >
-            הרשמה
+            {sending ? "שולח..." : "הרשמה"}
           </button>
 
           <div className="flex items-start gap-2 pt-1">

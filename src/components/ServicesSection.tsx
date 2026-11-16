@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Reveal from "@/components/motion/Reveal";
 
 const services = [
   {
@@ -22,30 +23,41 @@ const ServicesSection = () => {
   return (
     <section className="section-padding bg-card">
       <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-16">
+        <Reveal className="text-center mb-16">
           <h2 className="headline-section mb-4">מה קורה כאן</h2>
           <div className="divider-line" />
-        </div>
+        </Reveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {services.map((service) => (
-            <div key={service.title} className="group text-center">
-              <div className="relative w-full h-64 rounded-2xl overflow-hidden mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+          {services.map((service, i) => (
+            <Reveal key={service.title} delay={i * 120}>
+              <article tabIndex={0} className="svc-card h-80 md:h-[26rem]">
                 <Image
                   src={service.image}
-                  alt={service.title}
+                  alt=""
                   fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  sizes="(min-width: 768px) 33vw, 100vw"
+                  className="svc-img object-cover"
                 />
-              </div>
-              <h3
-                className="text-xl font-bold mb-3"
-                style={{ fontFamily: "var(--font-display)", color: "var(--color-foreground)" }}
-              >
-                {service.title}
-              </h3>
-              <p className="body-text text-sm">{service.description}</p>
-            </div>
+                <div className="svc-shade" />
+                <div className="absolute inset-x-0 bottom-0 p-6 text-right">
+                  <h3
+                    className="text-2xl font-bold"
+                    style={{ fontFamily: "var(--font-display)", color: "var(--color-cream)" }}
+                  >
+                    {service.title}
+                  </h3>
+                  <div className="svc-desc">
+                    <p
+                      className="text-sm md:text-base font-light leading-relaxed"
+                      style={{ color: "var(--color-cream)" }}
+                    >
+                      {service.description}
+                    </p>
+                  </div>
+                </div>
+              </article>
+            </Reveal>
           ))}
         </div>
       </div>
