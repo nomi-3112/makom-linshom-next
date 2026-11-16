@@ -23,7 +23,7 @@ async function notifyByEmail(name: string, phone: string, email: string) {
     from: "מקום לנשום <idan@makom-linshom.com>",
     to: NOTIFY,
     replyTo: email,
-    subject: `הרשמה לשבוע ההכנה: ${name}`,
+    subject: `הרשמה ל-IN/OUT: ${name}`,
     text: `הרשמה חדשה לשבוע ההכנה של אתגר ההרגלים:\n\nשם: ${name}\nטלפון: ${phone}\nמייל: ${email}`,
   });
   if (error) throw error;
