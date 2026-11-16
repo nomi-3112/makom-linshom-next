@@ -31,9 +31,8 @@ export default function ScrollWords({
       const vh = window.innerHeight;
       if (box.bottom < 0 || box.top > vh) return;
       const line = vh * 0.62;
-      for (const word of words) {
-        word.classList.toggle("on", word.getBoundingClientRect().top < line);
-      }
+      const lit = words.map((word) => word.getBoundingClientRect().top < line);
+      words.forEach((word, i) => word.classList.toggle("on", lit[i]));
     });
 
     return () => {

@@ -15,9 +15,12 @@ const HeroSection = () => {
     const content = contentRef.current;
     if (!section || !bg || !content || prefersReducedMotion()) return;
 
+    let last = -1;
     return onScrollFrame(() => {
       const h = section.offsetHeight;
       const y = Math.min(window.scrollY, h);
+      if (y === last) return; // nothing changed (e.g. hero already scrolled past)
+      last = y;
       bg.style.transform = `translate3d(0, ${(y * 0.35).toFixed(1)}px, 0)`;
       content.style.opacity = String(Math.max(0, 1 - y / (h * 0.6)));
       content.style.transform = `translate3d(0, ${(-y * 0.15).toFixed(1)}px, 0)`;
@@ -50,7 +53,7 @@ const HeroSection = () => {
         ref={contentRef}
         className="relative z-10 flex h-full flex-col items-center justify-end pb-[3.75rem] md:justify-center md:pb-0 md:pl-[14%] px-6 text-center will-change-transform"
       >
-        <h1 className="sr-only">מקום לנשום — עידן פלג</h1>
+        <h1 className="sr-only">מקום לנשום</h1>
         <Image
           src="/logo-cream.png"
           alt="מקום לנשום - עידן פלג"

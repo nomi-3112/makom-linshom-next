@@ -31,7 +31,7 @@ const ContactSection = () => {
             >
               לא חייבים ללכת את הדרך הזו לבד
             </h2>
-            <div className="divider-line" />
+            <div className="divider-line divider-gold" />
             <p
               className="text-lg md:text-xl font-light mt-6 mb-10"
               style={{ color: "hsl(38 52% 94% / 0.85)" }}

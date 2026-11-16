@@ -21,7 +21,7 @@ const paragraphs = [
 
 const CoreLogicSection = () => {
   return (
-    <section className="section-padding relative overflow-hidden">
+    <section className="section-padding section-roomy relative overflow-hidden">
       <div className="absolute inset-0 opacity-[0.06]">
         <Image src="/cracked-earth.jpg" alt="" fill sizes="100vw" className="object-cover" />
       </div>
@@ -29,7 +29,7 @@ const CoreLogicSection = () => {
       <div className="relative max-w-3xl mx-auto text-center">
         <Reveal>
           <h2 className="headline-section mb-4">בלי קלישאות ובלי קיצורי דרך</h2>
-          <div className="divider-line" />
+          <div className="divider-line divider-gold" />
         </Reveal>
         <ScrollWords
           paragraphs={paragraphs}

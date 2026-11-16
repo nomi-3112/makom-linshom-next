@@ -21,17 +21,17 @@ const services = [
 
 const ServicesSection = () => {
   return (
-    <section className="section-padding bg-card">
+    <section className="section-padding section-roomy bg-card">
       <div className="max-w-5xl mx-auto">
         <Reveal className="text-center mb-16">
           <h2 className="headline-section mb-4">מה קורה כאן</h2>
-          <div className="divider-line" />
+          <div className="divider-line divider-gold" />
         </Reveal>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
           {services.map((service, i) => (
             <Reveal key={service.title} delay={i * 120}>
-              <article tabIndex={0} className="svc-card h-80 md:h-[26rem]">
+              <article className="svc-card h-80 md:h-[26rem]">
                 <Image
                   src={service.image}
                   alt=""

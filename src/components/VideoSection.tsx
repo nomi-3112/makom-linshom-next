@@ -2,10 +2,10 @@ import Reveal from "@/components/motion/Reveal";
 
 const VideoSection = () => {
   return (
-    <section className="section-padding bg-card">
+    <section className="section-padding section-roomy bg-card">
       <Reveal className="max-w-3xl mx-auto text-center">
         <h2 className="headline-section mb-4">סיור קצר במרחב</h2>
-        <div className="divider-line" />
+        <div className="divider-line divider-gold" />
       </Reveal>
       <Reveal className="mt-10" delay={120}>
         {/* Phone-style frame */}

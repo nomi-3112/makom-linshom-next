@@ -33,7 +33,9 @@ export default function ParallaxImage({
       const box = frame.getBoundingClientRect();
       const vh = window.innerHeight;
       if (box.bottom < 0 || box.top > vh) return;
-      const offset = (box.top + box.height / 2 - vh / 2) * -strength;
+      const max = box.height * 0.1; // the image has 10% spare height above and below
+      const raw = (box.top + box.height / 2 - vh / 2) * -strength;
+      const offset = Math.max(-max, Math.min(max, raw));
       layer.style.transform = `translate3d(0, ${offset.toFixed(1)}px, 0)`;
     });
   }, [strength]);

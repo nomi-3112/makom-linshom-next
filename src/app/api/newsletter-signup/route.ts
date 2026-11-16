@@ -4,8 +4,11 @@ import { Resend } from "resend";
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
-  const body = await request.json().catch(() => ({}));
-  const { email, website } = body as { email?: string; website?: string };
+  const body: unknown = await request.json().catch(() => null);
+  const { email, website } = (body && typeof body === "object" ? body : {}) as {
+    email?: unknown;
+    website?: unknown;
+  };
 
   // Honeypot: בוטים ממלאים את השדה הנסתר הזה, בני אדם לא רואים אותו
   if (website) {
@@ -13,7 +16,7 @@ export async function POST(request: Request) {
   }
 
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!email || !emailPattern.test(email)) {
+  if (typeof email !== "string" || email.length > 254 || !emailPattern.test(email)) {
     return NextResponse.json(
       { success: false, error: "כתובת מייל לא תקינה" },
       { status: 400 }

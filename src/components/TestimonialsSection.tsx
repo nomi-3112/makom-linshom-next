@@ -5,20 +5,23 @@ import Image from "next/image";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import Reveal from "@/components/motion/Reveal";
 
-type Testimonial = { src: string; alt: string };
+type Testimonial = { src: string; alt: string; width: number; height: number };
+
+/** Strip images are 288px tall on desktop; request a width that matches each image's shape. */
+const stripSizes = (t: Testimonial) => `${Math.ceil((288 * t.width) / t.height)}px`;
 
 const testimonials: Testimonial[] = [
-  { src: "/testimonial-daniel.jpg", alt: "המלצה מדניאל קפלן" },
-  { src: "/testimonial-israel.jpg", alt: "המלצה מישראל סוויסה" },
-  { src: "/testimonial-leah.png", alt: "המלצה מלאה ישעיהו" },
-  { src: "/testimonial-noa.jpeg", alt: "המלצה מנועה ויניקור" },
-  { src: "/testimonial-shahar.png", alt: "המלצה משחר פרל" },
-  { src: "/testimonial-kelly.jpeg", alt: "המלצה מקלי מאיירס" },
-  { src: "/testimonial-ori.jpg", alt: "המלצה מאורי" },
-  { src: "/testimonial-galit.jpg", alt: "המלצה מגלית" },
-  { src: "/testimonial-inbar.jpg", alt: "המלצה מענבר נוי אליאסי" },
-  { src: "/testimonial-hila.jpg", alt: "המלצה מהילה" },
-  { src: "/testimonial-ofek2.jpg", alt: "המלצה מאופק פרץ" },
+  { src: "/testimonial-daniel.jpg", alt: "המלצה מדניאל קפלן", width: 819, height: 970 },
+  { src: "/testimonial-israel.jpg", alt: "המלצה מישראל סוויסה", width: 825, height: 1231 },
+  { src: "/testimonial-leah.png", alt: "המלצה מלאה ישעיהו", width: 1070, height: 690 },
+  { src: "/testimonial-noa.jpeg", alt: "המלצה מנועה ויניקור", width: 407, height: 600 },
+  { src: "/testimonial-shahar.png", alt: "המלצה משחר פרל", width: 1170, height: 1153 },
+  { src: "/testimonial-kelly.jpeg", alt: "המלצה מקלי מאיירס", width: 1170, height: 1387 },
+  { src: "/testimonial-ori.jpg", alt: "המלצה מאורי", width: 903, height: 1736 },
+  { src: "/testimonial-galit.jpg", alt: "המלצה מגלית", width: 1140, height: 1741 },
+  { src: "/testimonial-inbar.jpg", alt: "המלצה מענבר נוי אליאסי", width: 1170, height: 1691 },
+  { src: "/testimonial-hila.jpg", alt: "המלצה מהילה", width: 1080, height: 1818 },
+  { src: "/testimonial-ofek2.jpg", alt: "המלצה מאופק פרץ", width: 1170, height: 1506 },
 ];
 
 const rows = [testimonials.slice(0, 6), testimonials.slice(6)];
@@ -43,9 +46,9 @@ const TestimonialsSection = () => {
         <Image
           src={t.src}
           alt={duplicate ? "" : t.alt}
-          width={600}
-          height={800}
-          sizes="240px"
+          width={t.width}
+          height={t.height}
+          sizes={stripSizes(t)}
           className="h-56 md:h-72 w-auto object-cover"
         />
       </button>
@@ -53,12 +56,12 @@ const TestimonialsSection = () => {
   };
 
   return (
-    <section className="py-24 md:py-32 bg-card overflow-hidden">
+    <section className="py-24 md:py-32 bg-card overflow-clip">
       <Reveal className="max-w-5xl mx-auto px-6 text-center">
         <h2 className="headline-section mb-4 text-xl md:text-3xl lg:text-4xl">
           מה אומרים אנשים שעברו איתי דרך
         </h2>
-        <div className="divider-line" />
+        <div className="divider-line divider-gold" />
       </Reveal>
 
       <div className="mt-10 flex flex-col gap-2">
@@ -82,8 +85,8 @@ const TestimonialsSection = () => {
             <Image
               src={selected.src}
               alt={selected.alt}
-              width={800}
-              height={1000}
+              width={selected.width}
+              height={selected.height}
               sizes="(min-width: 768px) 672px, 100vw"
               className="w-full h-auto rounded-lg"
             />

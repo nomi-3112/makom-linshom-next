@@ -3,7 +3,7 @@ import Reveal from "@/components/motion/Reveal";
 
 const AboutSection = () => {
   return (
-    <section className="section-padding">
+    <section className="section-padding section-roomy">
       <div className="max-w-5xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-14 md:gap-16 items-center">
           <Reveal className="relative mx-auto w-full max-w-[400px]">

@@ -3,10 +3,10 @@ import ParallaxImage from "@/components/motion/ParallaxImage";
 
 const ManifestoSection = () => {
   return (
-    <section id="manifesto" className="section-padding scroll-mt-4">
+    <section id="manifesto" className="section-padding section-roomy scroll-mt-4">
       <Reveal className="max-w-3xl mx-auto text-center">
         <h2 className="headline-section mb-4">המרחב שלנו</h2>
-        <div className="divider-line" />
+        <div className="divider-line divider-gold" />
         <p className="body-text leading-loose">
           מקום לנשום נובע מתוך חיבור לאמת פנימית והבנה שחווית החיים שלנו מתחילה ונוצרת מבפנים. זהו מרחב שבו אדם לומד להיות טוב עם עצמו, לגלות את העוצמה והשקט שבתוכו, ולנשום בחייו מחדש בגרסה יציבה וחופשית יותר.
         </p>

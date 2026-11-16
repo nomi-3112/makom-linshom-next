@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { X } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -13,6 +13,7 @@ const NewsletterPopup = () => {
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   const [sending, setSending] = useState(false);
+  const emailRef = useRef<HTMLInputElement>(null);
   const [website, setWebsite] = useState("");
 
   useEffect(() => {
@@ -41,6 +42,17 @@ const NewsletterPopup = () => {
       // ignore
     }
   };
+
+  // Move focus into the dialog when it opens, and close it on Escape
+  useEffect(() => {
+    if (!isOpen) return;
+    emailRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") handleClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,6 +96,9 @@ const NewsletterPopup = () => {
       />
 
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="newsletter-title"
         className="relative w-full max-w-md rounded-2xl border p-8 shadow-2xl animate-scale-in"
         style={{
           background: "var(--color-background)",
@@ -99,7 +114,7 @@ const NewsletterPopup = () => {
         </button>
 
         <div className="text-center mb-6">
-          <h3 className="headline-section text-xl md:text-2xl mb-2">הישארו מחוברים</h3>
+          <h3 id="newsletter-title" className="headline-section text-xl md:text-2xl mb-2">הישארו מחוברים</h3>
           <p className="body-text text-sm md:text-base">
             הצטרפו כדי לקבל תרגילים, תכנים והשראה
           </p>
@@ -118,6 +133,7 @@ const NewsletterPopup = () => {
             className="absolute h-px w-px overflow-hidden opacity-0 pointer-events-none"
           />
           <input
+            ref={emailRef}
             type="email"
             placeholder="כתובת מייל"
             aria-label="כתובת מייל"
