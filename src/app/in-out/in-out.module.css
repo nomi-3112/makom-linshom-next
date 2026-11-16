@@ -163,18 +163,34 @@
   font-family: var(--font-display);
   font-size: 26px;
   font-weight: 700;
-  margin-bottom: 4px;
+  margin-bottom: 16px;
 }
 
-.formNote {
-  font-size: 14px;
-  line-height: 1.55;
-  opacity: 0.88;
-  margin-bottom: 18px;
-}
 
 .footer {
   display: flex;
   justify-content: center;
   padding-top: 22px;
+}
+
+/* "כל המסלול ללא עלות": קלף נפרד ובולט לפני הטופס */
+.free {
+  text-align: center;
+  background: radial-gradient(circle at 100% 0%, #e4decc 0%, #efeee9 55%);
+  border: 1.5px solid hsl(140 20% 32% / 0.35);
+}
+
+.freeTitle {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 900;
+  line-height: 1.15;
+  color: var(--color-primary);
+  margin-bottom: 6px;
+}
+
+.freeText {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--color-foreground);
 }

@@ -49,11 +49,13 @@ export default function InOutPage() {
           <strong>ממליצים להירשם יחד ולהיות שותפים לדרך.</strong>
         </p>
 
+        <section className={`${s.card} ${s.free}`}>
+          <p className={s.freeTitle}>כל המסלול ללא עלות</p>
+          <p className={s.freeText}>נשמח שתענו על המשובים שנשלח לאורך הדרך.</p>
+        </section>
+
         <section className={s.formCard} id="signup">
           <h2 className={s.formTitle}>הרשמה</h2>
-          <p className={s.formNote}>
-            כל המסלול ללא עלות, ונשמח שתענו על המשובים שנשלח לאורך הדרך.
-          </p>
           <PrepWeekSignupForm />
         </section>
 
