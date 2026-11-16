@@ -51,7 +51,7 @@ export default function InOutPage() {
 
         <section className={`${s.card} ${s.free}`}>
           <p className={s.freeTitle}>כל המסלול ללא עלות</p>
-          <p className={s.freeText}>נשמח שתענו על המשובים שנשלח לאורך הדרך.</p>
+          <p className={s.freeText}>ונשמח שתענו על המשובים שנשלח לאורך הדרך.</p>
         </section>
 
         <section className={s.formCard} id="signup">
