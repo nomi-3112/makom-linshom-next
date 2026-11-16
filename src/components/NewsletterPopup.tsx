@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { X } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+
+const STORAGE_KEY = "newsletter-dismissed";
 
 const NewsletterPopup = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,19 +12,49 @@ const NewsletterPopup = () => {
   const [agreed, setAgreed] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
+  const [sending, setSending] = useState(false);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const [website, setWebsite] = useState("");
+
   useEffect(() => {
-    const dismissed = sessionStorage.getItem("newsletter-dismissed");
-    if (dismissed) return;
-    const timer = setTimeout(() => setIsOpen(true), 4000);
-    return () => clearTimeout(timer);
+    try {
+      if (localStorage.getItem(STORAGE_KEY)) return;
+    } catch {
+      // storage blocked: still show the popup once per page view
+    }
+
+    const onScroll = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      if (max > 0 && window.scrollY / max >= 0.5) {
+        setIsOpen(true);
+        window.removeEventListener("scroll", onScroll);
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   const handleClose = () => {
     setIsOpen(false);
-    sessionStorage.setItem("newsletter-dismissed", "true");
+    try {
+      localStorage.setItem(STORAGE_KEY, "true");
+    } catch {
+      // ignore
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Move focus into the dialog when it opens, and close it on Escape
+  useEffect(() => {
+    if (!isOpen) return;
+    emailRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") handleClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isOpen]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {
       setMessage({ type: "error", text: "נא להזין כתובת מייל" });
@@ -32,8 +64,26 @@ const NewsletterPopup = () => {
       setMessage({ type: "error", text: "נא לאשר את מדיניות הפרטיות" });
       return;
     }
-    setMessage({ type: "success", text: "נרשמת בהצלחה לרשימת התפוצה" });
-    setTimeout(handleClose, 1500);
+    setSending(true);
+    setMessage(null);
+    try {
+      const res = await fetch("/api/newsletter-signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, website }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.success) {
+        setMessage({ type: "error", text: data.error || "שליחה נכשלה, נסו שוב" });
+        return;
+      }
+      setMessage({ type: "success", text: "נרשמת בהצלחה לרשימת התפוצה" });
+      setTimeout(handleClose, 1500);
+    } catch {
+      setMessage({ type: "error", text: "שליחה נכשלה, נסו שוב" });
+    } finally {
+      setSending(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -46,6 +96,9 @@ const NewsletterPopup = () => {
       />
 
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="newsletter-title"
         className="relative w-full max-w-md rounded-2xl border p-8 shadow-2xl animate-scale-in"
         style={{
           background: "var(--color-background)",
@@ -61,16 +114,29 @@ const NewsletterPopup = () => {
         </button>
 
         <div className="text-center mb-6">
-          <h3 className="headline-section text-xl md:text-2xl mb-2">הישארו מחוברים</h3>
+          <h3 id="newsletter-title" className="headline-section text-xl md:text-2xl mb-2">הישארו מחוברים</h3>
           <p className="body-text text-sm md:text-base">
             הצטרפו כדי לקבל תרגילים, תכנים והשראה
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Honeypot field, hidden from people */}
           <input
+            type="text"
+            name="website"
+            tabIndex={-1}
+            autoComplete="off"
+            aria-hidden="true"
+            value={website}
+            onChange={(e) => setWebsite(e.target.value)}
+            className="absolute h-px w-px overflow-hidden opacity-0 pointer-events-none"
+          />
+          <input
+            ref={emailRef}
             type="email"
             placeholder="כתובת מייל"
+            aria-label="כתובת מייל"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             dir="ltr"
@@ -93,9 +159,10 @@ const NewsletterPopup = () => {
 
           <button
             type="submit"
-            className="cta-button w-full justify-center rounded-lg"
+            disabled={sending}
+            className="cta-button w-full justify-center rounded-lg disabled:opacity-60"
           >
-            הרשמה
+            {sending ? "שולח..." : "הרשמה"}
           </button>
 
           <div className="flex items-start gap-2 pt-1">

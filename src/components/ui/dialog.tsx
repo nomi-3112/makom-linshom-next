@@ -29,6 +29,7 @@ function DialogContent({
     <DialogPortal>
       <DialogOverlay />
       <DialogPrimitive.Content
+        aria-describedby={undefined}
         className={cn(
           "fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl p-2 rounded-lg border shadow-lg",
           "bg-[var(--color-background)] border-[var(--color-border)]",
@@ -47,4 +48,6 @@ function DialogContent({
   );
 }
 
-export { Dialog, DialogTrigger, DialogContent };
+const DialogTitle = DialogPrimitive.Title;
+
+export { Dialog, DialogTrigger, DialogContent, DialogTitle };
