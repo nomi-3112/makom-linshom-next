@@ -39,31 +39,32 @@ const PrepWeekSignupForm = () => {
     }
   };
 
+  // הטופס יושב בתוך הקלף הירוק הכהה בדף /in-out
+  const goldButton =
+    "w-full flex justify-center items-center px-6 py-4 rounded-full text-lg font-bold transition-transform duration-200 hover:-translate-y-0.5";
+  const goldStyle = {
+    background: "linear-gradient(90deg, #F7C75F, #EEA942)",
+    color: "#2a2a2a",
+  };
+
   if (status === "success") {
     return (
-      <div className="text-center max-w-md mx-auto space-y-5">
-        <p className="body-text" style={{ color: "var(--color-primary)" }}>
+      <div className="text-center space-y-5" role="status">
+        <p className="text-base leading-relaxed">
           נרשמת. שבוע ההכנה מתחיל ביום ראשון 22.11 בבוקר, וכל התוכן יגיע בקבוצת הוואטסאפ.
         </p>
-        {WHATSAPP_GROUP_URL && (
-          <a
-            href={WHATSAPP_GROUP_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="cta-button w-full justify-center rounded-lg"
-          >
-            הצטרפות לקבוצה
-          </a>
-        )}
-        <p className="text-sm" style={{ color: "var(--color-muted-foreground)" }}>
+        <a
+          href={WHATSAPP_GROUP_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={goldButton}
+          style={goldStyle}
+        >
+          הצטרפות לקבוצה
+        </a>
+        <p className="text-sm opacity-85">
           יש שאלה? אפשר לכתוב לעידן ישירות{" "}
-          <a
-            href={IDAN_WHATSAPP_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline"
-            style={{ color: "var(--color-primary)" }}
-          >
+          <a href={IDAN_WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="underline">
             בוואטסאפ
           </a>
         </p>
@@ -71,14 +72,12 @@ const PrepWeekSignupForm = () => {
     );
   }
 
-  const inputStyle = {
-    background: "var(--color-background)",
-    borderColor: "var(--color-border)",
-    color: "var(--color-foreground)",
-  };
+  const inputClass =
+    "w-full px-5 py-3.5 rounded-[22px] border-0 text-base text-right outline-none focus:ring-2 focus:ring-[#F7C75F]";
+  const inputStyle = { background: "#fff", color: "var(--color-foreground)" };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 max-w-md mx-auto">
+    <form onSubmit={handleSubmit} className="space-y-3">
       <input
         type="text"
         name="website"
@@ -97,7 +96,7 @@ const PrepWeekSignupForm = () => {
         autoComplete="name"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        className="w-full px-4 py-2 rounded-md border text-sm outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+        className={inputClass}
         style={inputStyle}
       />
 
@@ -108,7 +107,7 @@ const PrepWeekSignupForm = () => {
         autoComplete="tel"
         value={phone}
         onChange={(e) => setPhone(e.target.value)}
-        className="w-full px-4 py-2 rounded-md border text-sm text-right outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+        className={inputClass}
         style={inputStyle}
       />
 
@@ -119,12 +118,12 @@ const PrepWeekSignupForm = () => {
         autoComplete="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="w-full px-4 py-2 rounded-md border text-sm text-right outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+        className={inputClass}
         style={inputStyle}
       />
 
       {status === "error" && (
-        <p className="text-sm text-center" style={{ color: "var(--color-destructive)" }}>
+        <p className="text-sm text-center font-medium" style={{ color: "#FFD9C7" }} role="alert">
           {errorText}
         </p>
       )}
@@ -132,22 +131,19 @@ const PrepWeekSignupForm = () => {
       <button
         type="submit"
         disabled={status === "loading"}
-        className="cta-button w-full justify-center rounded-lg disabled:opacity-60"
+        className={`${goldButton} mt-2 disabled:opacity-60`}
+        style={goldStyle}
       >
         {status === "loading" ? "שולח..." : "אני רוצה להצטרף"}
       </button>
 
-      <p
-        className="text-xs text-center leading-relaxed"
-        style={{ color: "var(--color-muted-foreground)" }}
-      >
+      <p className="text-xs text-center leading-relaxed pt-1 opacity-80">
         בהרשמה אני מאשר/ת את{" "}
         <a
           href="https://docs.google.com/document/d/1AHgzI8DzwfXdRq8-CVW6Vtog1NMwFGAb/edit"
           target="_blank"
           rel="noopener noreferrer"
           className="underline"
-          style={{ color: "var(--color-primary)" }}
         >
           מדיניות הפרטיות
         </a>
