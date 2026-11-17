@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import PrepWeekSignupForm from "@/components/PrepWeekSignupForm";
+import InOutLogo from "@/components/InOutLogo";
 import s from "./in-out.module.css";
 
 export const metadata: Metadata = {
@@ -15,7 +16,9 @@ export default function InOutPage() {
       <div className={s.wrap}>
         <section className={`${s.card} ${s.hero}`}>
           <span className={s.pill}>מתחילים ביום ראשון 22.11</span>
-          <h1 className={s.title}>IN/OUT</h1>
+          <h1 className={s.title}>
+            <InOutLogo size={190} />
+          </h1>
           <p className={s.subtitle}>חודש של שינוי הרגלים</p>
           <p className={s.lead}>
             נבחן את ההרגלים שאנחנו מקיימים ואת ההשפעה שלהם על מצב הרוח, האנרגיה ותחושת הרווחה
