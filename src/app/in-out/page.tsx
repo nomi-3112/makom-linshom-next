@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import PrepWeekSignupForm from "@/components/PrepWeekSignupForm";
 import InOutLogo from "@/components/InOutLogo";
+import { connection } from "next/server";
+import { isSignupClosed } from "@/lib/inOutRound";
 import s from "./in-out.module.css";
 
 export const metadata: Metadata = {
@@ -10,12 +12,21 @@ export const metadata: Metadata = {
     "חודש של התנסות בשינוי הרגלים במסגרת משותפת. שבוע הכנה מ-22.11, נקודת הזינוק ב-29.11. כל המסלול ללא עלות.",
 };
 
-export default function InOutPage() {
+export default async function InOutPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ preview?: string }>;
+}) {
+  // הדף נבנה בכל ביקור, כדי שייסגר בדיוק בשעה שנקבעה
+  await connection();
+  // ?preview=closed מראה את המצב הסגור לפני הזמן, לבדיקה
+  const closed = isSignupClosed() || (await searchParams).preview === "closed";
+
   return (
     <main className={s.page}>
       <div className={s.wrap}>
         <section className={`${s.card} ${s.hero}`}>
-          <span className={s.pill}>מתחילים ביום ראשון 22.11</span>
+          <span className={s.pill}>{closed ? "ההרשמה לסבב הנוכחי נסגרה" : "מתחילים ביום ראשון 22.11"}</span>
           <h1 className={s.title}>
             <InOutLogo size={190} />
           </h1>
@@ -30,7 +41,7 @@ export default function InOutPage() {
           <div className={s.step}>
             <span className={s.dot} aria-hidden="true" />
             <h2 className={s.stepTitle}>שבוע הכנה</h2>
-            <p className={s.date}>ראשון 22.11 עד חמישי 26.11</p>
+            {!closed && <p className={s.date}>ראשון 22.11 עד חמישי 26.11</p>}
             <p className={s.stepText}>
               נבחר איזה הרגל יוצא ומה נכנס במקומו, ונבנה תוכנית ברורה לחודש.
             </p>
@@ -39,7 +50,7 @@ export default function InOutPage() {
           <div className={`${s.step} ${s.stepLast}`}>
             <span className={s.dot} aria-hidden="true" />
             <h2 className={s.stepTitle}>החודש</h2>
-            <p className={s.date}>נקודת הזינוק ביום ראשון 29.11</p>
+            {!closed && <p className={s.date}>נקודת הזינוק ביום ראשון 29.11</p>}
             <p className={s.stepText}>
               30 יום במסגרת של קבוצה, עם תכנים תומכים ומותאמים ליום-יום, ואפליקציה אישית לליווי
               התהליך.
@@ -52,14 +63,25 @@ export default function InOutPage() {
           <strong>ממליצים להירשם יחד ולהיות שותפים לדרך.</strong>
         </p>
 
-        <section className={`${s.card} ${s.free}`}>
-          <p className={s.freeTitle}>כל המסלול ללא עלות</p>
-          <p className={s.freeText}>ונשמח שתענו על המשובים שנשלח לאורך הדרך.</p>
-        </section>
+        {!closed && (
+          <section className={`${s.card} ${s.free}`}>
+            <p className={s.freeTitle}>כל המסלול ללא עלות</p>
+            <p className={s.freeText}>ונשמח שתענו על המשובים שנשלח לאורך הדרך.</p>
+          </section>
+        )}
 
         <section className={s.formCard} id="signup">
-          <h2 className={s.formTitle}>הרשמה</h2>
-          <PrepWeekSignupForm />
+          {closed ? (
+            <>
+              <h2 className={s.formTitle}>ההרשמה לסבב הנוכחי נסגרה</h2>
+              <p className={s.formText}>
+                רוצים להצטרף לסבב הבא? השאירו פרטים, ונעדכן אתכם כשהוא ייפתח.
+              </p>
+            </>
+          ) : (
+            <h2 className={s.formTitle}>הרשמה</h2>
+          )}
+          <PrepWeekSignupForm nextRound={closed} />
         </section>
 
         <footer className={s.footer}>

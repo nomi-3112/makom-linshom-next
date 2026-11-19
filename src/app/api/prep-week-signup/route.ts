@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { isSignupClosed } from "@/lib/inOutRound";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -18,20 +19,24 @@ async function addToSheet(name: string, phone: string, email: string) {
   if (!res.ok || text.trim() !== "ok") throw new Error(`Sheet webhook answered: ${text.slice(0, 200)}`);
 }
 
-async function notifyByEmail(name: string, phone: string, email: string) {
+async function notifyByEmail(name: string, phone: string, email: string, nextRound: boolean) {
   const { error } = await resend.emails.send({
     from: "מקום לנשום <idan@makom-linshom.com>",
     to: NOTIFY,
     replyTo: email,
-    subject: `הרשמה ל-IN/OUT: ${name}`,
-    text: `הרשמה חדשה לשבוע ההכנה של אתגר ההרגלים:\n\nשם: ${name}\nטלפון: ${phone}\nמייל: ${email}`,
+    subject: nextRound ? `IN/OUT, רשימה לסבב הבא: ${name}` : `הרשמה ל-IN/OUT: ${name}`,
+    text: nextRound
+      ? `מישהו השאיר פרטים לסבב הבא של אתגר ההרגלים (ההרשמה לסבב הנוכחי סגורה):\n\nשם: ${name}\nטלפון: ${phone}\nמייל: ${email}`
+      : `הרשמה חדשה לשבוע ההכנה של אתגר ההרגלים:\n\nשם: ${name}\nטלפון: ${phone}\nמייל: ${email}`,
   });
   if (error) throw error;
 }
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const { name, phone, email, website } = body;
+  const { name, phone, email, website, round } = body;
+  // אחרי מועד הסגירה כל פנייה נרשמת לסבב הבא, גם אם הדף נטען לפני הסגירה
+  const nextRound = round === "next" || isSignupClosed();
 
   // Honeypot: בוטים ממלאים את השדה הנסתר הזה, בני אדם לא רואים אותו
   if (website) {
@@ -54,9 +59,11 @@ export async function POST(request: Request) {
   }
 
   // מספיק שאחד מהשניים הצליח כדי שההרשמה לא תלך לאיבוד
+  // בגיליון מסמנים את מי שנרשם לסבב הבא בתחילת השם, כדי שלא יתערבב עם משתתפי הסבב הנוכחי
+  const sheetName = nextRound ? `[סבב הבא] ${name}` : name;
   const [sheet, mail] = await Promise.allSettled([
-    addToSheet(name, phone, email),
-    notifyByEmail(name, phone, email),
+    addToSheet(sheetName, phone, email),
+    notifyByEmail(name, phone, email, nextRound),
   ]);
   if (sheet.status === "rejected") console.error("Sheet append failed:", sheet.reason);
   if (mail.status === "rejected") console.error("Resend send failed:", mail.reason);
@@ -67,5 +74,5 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
-  return NextResponse.json({ success: true });
+  return NextResponse.json({ success: true, round: nextRound ? "next" : "current" });
 }

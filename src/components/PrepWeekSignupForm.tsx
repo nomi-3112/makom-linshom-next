@@ -5,12 +5,14 @@ import { useState } from "react";
 const WHATSAPP_GROUP_URL = "https://chat.whatsapp.com/GscBoPMAr0CK0M8HjCNQDx";
 const IDAN_WHATSAPP_URL = "https://wa.me/972507341685";
 
-const PrepWeekSignupForm = () => {
+// nextRound: ההרשמה לסבב הנוכחי נסגרה, הטופס אוסף פרטים לסבב הבא
+const PrepWeekSignupForm = ({ nextRound = false }: { nextRound?: boolean }) => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [website, setWebsite] = useState(""); // honeypot
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [savedForNext, setSavedForNext] = useState(nextRound);
   const [errorText, setErrorText] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -26,12 +28,14 @@ const PrepWeekSignupForm = () => {
       const res = await fetch("/api/prep-week-signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, phone, email, website }),
+        body: JSON.stringify({ name, phone, email, website, round: nextRound ? "next" : "current" }),
       });
       const data = await res.json();
       if (!res.ok || !data.success) {
         throw new Error(data.error || "שליחה נכשלה");
       }
+      // אם ההרשמה נסגרה בזמן שהדף היה פתוח, השרת רושם לסבב הבא
+      setSavedForNext(nextRound || data.round === "next");
       setStatus("success");
     } catch (err) {
       setStatus("error");
@@ -46,6 +50,22 @@ const PrepWeekSignupForm = () => {
     background: "linear-gradient(90deg, #F7C75F, #EEA942)",
     color: "#2a2a2a",
   };
+
+  if (status === "success" && savedForNext) {
+    return (
+      <div className="text-center space-y-4" role="status">
+        <p className="text-base leading-relaxed">
+          קיבלנו את הפרטים. נעדכן אותך כשייפתח הסבב הבא.
+        </p>
+        <p className="text-sm opacity-85">
+          יש שאלה? אפשר לכתוב לעידן ישירות{" "}
+          <a href={IDAN_WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="underline">
+            בוואטסאפ
+          </a>
+        </p>
+      </div>
+    );
+  }
 
   if (status === "success") {
     return (
@@ -134,7 +154,7 @@ const PrepWeekSignupForm = () => {
         className={`${goldButton} mt-2 disabled:opacity-60`}
         style={goldStyle}
       >
-        {status === "loading" ? "שולח..." : "אני רוצה להצטרף"}
+        {status === "loading" ? "שולח..." : nextRound ? "עדכנו אותי על הסבב הבא" : "אני רוצה להצטרף"}
       </button>
 
       <p className="text-xs text-center leading-relaxed pt-1 opacity-80">
